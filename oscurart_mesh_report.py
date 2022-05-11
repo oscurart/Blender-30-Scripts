@@ -1,7 +1,13 @@
 import bpy
 import json
+import os
 
-with open('readme.txt', 'w') as f:
+file = os.path.basename(bpy.data.filepath)
+file = file.rpartition(".")[0]
+
+directorio = "%s/%s.txt" % (os.path.dirname(bpy.data.filepath),file)
+
+with open(directorio, 'w') as f:
     tv = 0
     for ob in bpy.data.objects:
         if ob.type == "MESH":

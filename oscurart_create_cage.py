@@ -35,8 +35,12 @@ cageObj = bpy.data.objects.new("Cage", nMesh)
 
 actCollection.objects.link(cageObj)
 
+VertFinalPos = {}
 for vert in cageObj.data.vertices:
-    vert.co = vert.co + (vert.normal*ce)
+    VertFinalPos[vert.index] = vert.co + (vert.normal*ce)
+    
+for ind,co  in VertFinalPos.items():    
+    cageObj.data.vertices[ind].co = co
     
 bpy.context.scene.render.bake.cage_object = cageObj 
 cageObj.matrix_world = selObMatrix

@@ -19,7 +19,7 @@ for stroke in bpy.context.object.data.curves:
     vi += 1 
 
 me = bpy.data.meshes.new("data")
-gpdb = bpy.data.objects.new("Annotation", me)
+gpdb = bpy.data.objects.new("Curves", me)
 me.from_pydata(vertlist,edgelist,[])
 me.update()
 bpy.context.scene.collection.objects.link(gpdb)

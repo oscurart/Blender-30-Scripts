@@ -1,21 +1,35 @@
+#mirror vg from rigs _R to _L
+
 import bpy
-from mathutils import Vector
+import bmesh
 
-actObj = bpy.context.object
-avg = bpy.context.object.vertex_groups.active
 
-ai = bpy.context.object.vertex_groups.active_index
+C = bpy.context
+obj = bpy.context.object
+bpy.context.scene.tool_settings.use_uv_select_sync = True
+me = obj.data
 
-min = {}
-may = {}
+#creates sym map
+bm = bmesh.from_edit_mesh(me)
+vertices = [vert.index for vert in bm.verts if vert.select]
 
-for vert in actObj.data.vertices:
-    if vert.co[0] >= 0:
-        may[vert.co[:]]=vert.index
-    else:
-        min[vert.co[:]]=vert.index    
-        
-for minco,index in min.items():
-    i = (Vector(minco)*Vector((-1,1,1)))[:]
-    print(index,may[i])
-    actObj.data.vertices[index].groups[ai].weight = actObj.data.vertices[may[i]].groups[ai].weight
+for group in obj.vertex_groups:
+    if group.name.count("_R"):
+        for index in vertices:            
+            bpy.ops.object.mode_set(mode="EDIT")
+            bpy.ops.mesh.select_all(action="DESELECT")  
+            bpy.ops.object.mode_set(mode="OBJECT")  
+            me.vertices[index].select = True
+            bpy.ops.object.mode_set(mode="EDIT")
+            bpy.ops.mesh.select_mirror()
+            bpy.ops.object.mode_set(mode="OBJECT") 
+            mirrorVert = [mirrorvert.index for mirrorvert in me.vertices if mirrorvert.select][0]
+            print(mirrorVert)
+            try:
+                i = group.weight(index)
+            except:
+                i = 0
+            
+            obj.vertex_groups[group.name.replace("_R","_L")].add([mirrorVert],i,"REPLACE")
+
+
